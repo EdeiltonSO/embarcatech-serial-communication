@@ -43,10 +43,10 @@ int main()
     ssd1306_fill(&ssd, false);
 
     // desenha a borda retangular
-    ssd1306_rect(&ssd, 0, 0, 128, 64, true, false);
+    //ssd1306_rect(&ssd, 0, 0, 128, 64, true, false);
 
     // desenha uma string
-    ssd1306_draw_string(&ssd, "AUTOMATO FINITO", 4, 4);
+    ssd1306_draw_string(&ssd, "cause this is  thrilleeeeeeer thriller night", 0, 0);
 
     // atualiza o display
     ssd1306_send_data(&ssd);
