@@ -14,24 +14,31 @@
 // macros para os botões
 #define A_BUTTON_GPIO_PIN 5
 #define B_BUTTON_GPIO_PIN 6
-#define DEBOUNCING_TIME_MS 500
+#define DEBOUNCING_TIME_MS 200
 
 // string recebida via serial
-char serial_input[1024];
+char serial_input[1000];
 
 // para o cálculo do debounce
 int last_time = 0;
 
-// Configurações da PIO
+// configurações da PIO
 PIO pio;
 uint offset;
 uint sm;
+
+// estrutura de dados do display
+ssd1306_t ssd;
+bool green_led_status = false;
+bool blue_led_status = false;
 
 // protótipos de funções
 void led_matrix_setup();
 void draw_matrix_if_number(char *serial_input);
 uint32_t matrix_rgb(double r, double g, double b);
 void display_setup(ssd1306_t *ssd);
+void display_greetings(ssd1306_t *ssd);
+void display_write_message(ssd1306_t *ssd, char *msg);
 static void button_irq_handler(uint gpio, uint32_t events);
 
 int main()
@@ -39,8 +46,8 @@ int main()
   stdio_init_all();
 
   // inicializa a estrutura de dados que será enviada para o display
-  ssd1306_t ssd;
   display_setup(&ssd);
+  display_greetings(&ssd);
   
   // inicializa a matriz de LEDs
   led_matrix_setup();
@@ -70,7 +77,8 @@ int main()
   while (true)
   {
     // lê entrada do monitor serial
-    scanf("%1024s", serial_input);
+    scanf("%1000s", serial_input);
+    printf("%s\n", serial_input);
 
     // se a entrada for um número, acende os LEDs correspondentes na matriz
     // se a entrada não for um número, apaga todos os LEDs da matriz
@@ -90,26 +98,39 @@ int main()
 }
 
 void button_irq_handler(uint gpio, uint32_t events) {
-    uint32_t current_time = to_us_since_boot(get_absolute_time());
+    uint32_t current_time = to_ms_since_boot(get_absolute_time());
 
     // implementa debounce nos botões
-    if (current_time - last_time > DEBOUNCING_TIME_MS*1000)
+    if (current_time - last_time > DEBOUNCING_TIME_MS)
     {
         last_time = current_time;
 
         if (gpio == A_BUTTON_GPIO_PIN)
         {   
-            bool status_button = gpio_get(GREEN_LED_GPIO_PIN);
-            gpio_put(GREEN_LED_GPIO_PIN, !status_button);
-            // mensagem informativa sobre o estado do LED no display
-            // um texto descritivo sobre a operação deve ser enviado ao Serial Monitor
+          bool status_button = gpio_get(GREEN_LED_GPIO_PIN);
+          green_led_status = !status_button;
+
+          char *msg = green_led_status 
+            ? "O LED verde foi ligado"
+            : "O LED verde foi desligado";
+
+          gpio_put(GREEN_LED_GPIO_PIN, !status_button);
+          display_write_message(&ssd, msg);
+          printf("%s.\nPressione os botões A e B para ligar ou desligar os LEDs azul e verde.\n", msg);
         }
         else // gpio == B_BUTTON_GPIO_PIN
         {
-            bool status_button = gpio_get(BLUE_LED_GPIO_PIN);
-            gpio_put(BLUE_LED_GPIO_PIN, !status_button);
-            // mensagem informativa sobre o estado do LED no display
-            // um texto descritivo sobre a operação deve ser enviado ao Serial Monitor
+          bool status_button = gpio_get(BLUE_LED_GPIO_PIN);
+
+          blue_led_status = !status_button;
+
+          char *msg = blue_led_status 
+            ? "O LED azul foi ligado"
+            : "O LED azul foi desligado";
+
+          gpio_put(BLUE_LED_GPIO_PIN, !status_button);
+          display_write_message(&ssd, msg);
+          printf("%s.\nPressione os botões A e B para ligar ou desligar os LEDs azul e verde.\n", msg);
         }
     }
 }
@@ -137,6 +158,33 @@ void display_setup(ssd1306_t *ssd) {
 
   // limpa o display ao iniciar
   ssd1306_fill(ssd, false);
+  ssd1306_send_data(ssd);
+}
+
+void display_greetings(ssd1306_t *ssd) {
+    // limpa o display antes do teste
+    ssd1306_fill(ssd, false);
+
+    // desenha os caracteres de teste
+    ssd1306_draw_string(ssd, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 0, 0);
+
+    // atualiza o display
+    ssd1306_send_data(ssd);
+
+    // tempo para exibir os caracteres de teste na tela
+    sleep_ms(3000);
+
+    // limpa e altera mensagem da tela
+    ssd1306_fill(ssd, false);
+    ssd1306_draw_string(ssd, "aguardando     comandos", 0, 0);
+
+    // atualiza o display
+    ssd1306_send_data(ssd);
+}
+
+void display_write_message(ssd1306_t *ssd, char *msg) {
+  ssd1306_fill(ssd, false);
+  ssd1306_draw_string(ssd, msg, 0, 0);
   ssd1306_send_data(ssd);
 }
 
@@ -169,7 +217,7 @@ void draw_matrix_if_number(char *serial_input) {
     {
       for (int j = 0; j < FRAME_DIMENSION; j++)
       { 
-        pio_sm_put_blocking(pio, sm, matrix_rgb(0.0, 0.0, numbers[*serial_input-48][FRAME_DIMENSION - 1 - i][(i + 1) % 2 == 0 ? j : FRAME_DIMENSION - j - 1]));
+        pio_sm_put_blocking(pio, sm, matrix_rgb(numbers[*serial_input-48][FRAME_DIMENSION - 1 - i][(i + 1) % 2 == 0 ? j : FRAME_DIMENSION - j - 1], 0.0, 0.0));
       }
     }
   }
