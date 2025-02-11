@@ -17,7 +17,7 @@
 #define DEBOUNCING_TIME_MS 200
 
 // string recebida via serial
-char serial_input[1000];
+char serial_input[128];
 
 // para o cálculo do debounce
 int last_time = 0;
@@ -77,7 +77,7 @@ int main()
   while (true)
   {
     // lê entrada do monitor serial
-    scanf("%1000s", serial_input);
+    scanf("%128s", serial_input);
     printf("%s\n", serial_input);
 
     // se a entrada for um número, acende os LEDs correspondentes na matriz
