@@ -37,15 +37,15 @@ Uma demonstração do projeto em funcionamento pode ser assistida no link abaixo
 
 O firmware controla todo o hardware visto no [tópico 2](#2--diagrama-do-hardware) e, por meio de interações do usuário, é capaz de:
 
-1. exibir caracteres alfanuméricos **com letras maiúsculas e minúsculas** no display SSD1306, inseridos via monitor serial;
+1. Exibir caracteres alfanuméricos **com letras maiúsculas e minúsculas** no display SSD1306, inseridos via monitor serial;
 
-2. exibir simultaneamente os caracteres **numéricos** na matriz de LEDs WS2812, inseridos via monitor serial;
+2. Exibir simultaneamente os caracteres **numéricos** na matriz de LEDs WS2812, inseridos via monitor serial;
 
-3. acender e apagar o canal verde do LED RGB ao pressionar o botão A;
+3. Acender e apagar o canal verde do LED RGB ao pressionar o botão A;
 
-4. acender e apagar o canal azul do LED RGB ao pressionar o botão B;
+4. Acender e apagar o canal azul do LED RGB ao pressionar o botão B;
 
-5. exibir mensagens informativas no display SSD1306 e no monitor serial **ao alterar o estado do LED com os botões A e B**;
+5. Exibir mensagens informativas no display SSD1306 e no monitor serial **ao alterar o estado do LED com os botões A e B**;
 
 ## 5. 🧰 Pré-requisitos para executar
 
