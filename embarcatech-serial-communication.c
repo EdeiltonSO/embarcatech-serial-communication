@@ -8,6 +8,9 @@
 #include "libs/ssd1306.h"
 #include "libs/font.h"
 
+#define GREEN_LED_GPIO_PIN 11
+#define BLUE_LED_GPIO_PIN 12
+
 // macros para os botões
 #define A_BUTTON_GPIO_PIN 5
 #define B_BUTTON_GPIO_PIN 6
@@ -15,6 +18,9 @@
 
 // string recebida via serial
 char serial_input[1024];
+
+// para o cálculo do debounce
+int last_time = 0;
 
 // Configurações da PIO
 PIO pio;
@@ -26,6 +32,7 @@ void led_matrix_setup();
 void draw_matrix_if_number(char *serial_input);
 uint32_t matrix_rgb(double r, double g, double b);
 void display_setup(ssd1306_t *ssd);
+static void button_irq_handler(uint gpio, uint32_t events);
 
 int main()
 {
@@ -37,6 +44,28 @@ int main()
   
   // inicializa a matriz de LEDs
   led_matrix_setup();
+
+  // inicializa canais que serão utilizados no LED RGB
+  gpio_init(GREEN_LED_GPIO_PIN);
+  gpio_set_dir(GREEN_LED_GPIO_PIN, GPIO_OUT);
+  gpio_init(BLUE_LED_GPIO_PIN);
+  gpio_set_dir(BLUE_LED_GPIO_PIN, GPIO_OUT);
+  gpio_put(GREEN_LED_GPIO_PIN, false);
+  gpio_put(GREEN_LED_GPIO_PIN, false);
+
+  // inicializa botão A
+  gpio_init(A_BUTTON_GPIO_PIN);
+  gpio_set_dir(A_BUTTON_GPIO_PIN, GPIO_IN);
+  gpio_pull_up(A_BUTTON_GPIO_PIN);
+
+  // inicializa botão B
+  gpio_init(B_BUTTON_GPIO_PIN);
+  gpio_set_dir(B_BUTTON_GPIO_PIN, GPIO_IN);
+  gpio_pull_up(B_BUTTON_GPIO_PIN);
+
+  // habilita interrupções no toque dos botões A e B
+  gpio_set_irq_enabled_with_callback(A_BUTTON_GPIO_PIN, GPIO_IRQ_EDGE_FALL, true, &button_irq_handler);
+  gpio_set_irq_enabled_with_callback(B_BUTTON_GPIO_PIN, GPIO_IRQ_EDGE_FALL, true, &button_irq_handler);
   
   while (true)
   {
@@ -58,6 +87,31 @@ int main()
 
     sleep_ms(1000);
   }
+}
+
+void button_irq_handler(uint gpio, uint32_t events) {
+    uint32_t current_time = to_us_since_boot(get_absolute_time());
+
+    // implementa debounce nos botões
+    if (current_time - last_time > DEBOUNCING_TIME_MS*1000)
+    {
+        last_time = current_time;
+
+        if (gpio == A_BUTTON_GPIO_PIN)
+        {   
+            bool status_button = gpio_get(GREEN_LED_GPIO_PIN);
+            gpio_put(GREEN_LED_GPIO_PIN, !status_button);
+            // mensagem informativa sobre o estado do LED no display
+            // um texto descritivo sobre a operação deve ser enviado ao Serial Monitor
+        }
+        else // gpio == B_BUTTON_GPIO_PIN
+        {
+            bool status_button = gpio_get(BLUE_LED_GPIO_PIN);
+            gpio_put(BLUE_LED_GPIO_PIN, !status_button);
+            // mensagem informativa sobre o estado do LED no display
+            // um texto descritivo sobre a operação deve ser enviado ao Serial Monitor
+        }
+    }
 }
 
 void display_setup(ssd1306_t *ssd) {
