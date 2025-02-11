@@ -12,7 +12,7 @@
 
 ## 1. 💡 O que é este projeto
 
-Este é um firmware escrito em C que utiliza comunicação serial I2C e UART via USB para controlar um display OLED e uma matriz de LEDs conectados a um Raspberry Pi Pico W. O projeto também permite que botões conectados à placa controlem um LED RGB adicional.
+Este é um firmware escrito em C que utiliza comunicação serial I2C e UART via USB para controlar um display OLED SSD1306 e uma matriz de LEDs WS2812 conectados a um Raspberry Pi Pico W. O projeto também permite que botões conectados à placa controlem um LED RGB adicional.
 
 ## 2. ⚡ Diagrama do hardware
 
