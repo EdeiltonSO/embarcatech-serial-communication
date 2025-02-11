@@ -2,6 +2,10 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
+#define I2C_PORT i2c1
+#define I2C_SDA_GPIO_PIN 14
+#define I2C_SCL_GPIO_PIN 15
+#define I2C_ADDRESS 0x3C
 #define WIDTH 128
 #define HEIGHT 64
 
