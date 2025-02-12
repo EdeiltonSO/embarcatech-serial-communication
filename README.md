@@ -31,7 +31,7 @@ As conexões podem ser feitas de acordo com o esquema abaixo:
 
 Uma demonstração do projeto em funcionamento pode ser assistida no link abaixo:
 
-...
+https://drive.google.com/file/d/1z28wdQV2blOb3ypeaiwm_nx7dbNgdaYb/view?usp=sharing
 
 ## 4. 🔎 Funcionalidades disponíveis
 
@@ -45,7 +45,7 @@ O firmware controla todo o hardware visto no [tópico 2](#2--diagrama-do-hardwar
 
 4. Acender e apagar o canal azul do LED RGB ao pressionar o botão B;
 
-5. Exibir mensagens informativas no display SSD1306 e no monitor serial **ao alterar o estado do LED com os botões A e B**;
+5. Exibir mensagens informativas no display SSD1306 e no monitor serial **ao alterar o estado do LED com os botões A e B**.
 
 ## 5. 🧰 Pré-requisitos para executar
 
@@ -61,7 +61,7 @@ A configuração sugerida para executar o projeto é:
 - [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools);
 - [Raspberry Pi Pico](https://marketplace.visualstudio.com/items?itemName=raspberry-pi.raspberry-pi-pico);
 - [Wokwi Simulator](https://marketplace.visualstudio.com/items?itemName=Wokwi.wokwi-vscode);
-6. Ter uma placa BitDogLab disponível e pré configurada na sua máquina;
+6. Ter uma placa BitDogLab disponível e pré configurada na sua máquina.
 
 ## 6. 💻 Como executar a simulação
 
